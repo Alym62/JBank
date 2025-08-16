@@ -5,13 +5,15 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "TB_DEPOSIT")
 public class Deposit {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "CODE_DEPOSIT")
-    private String codeDeposit;
+    private UUID codeDeposit;
 
     @Column(name = "VALUE_DEPOSIT")
     private BigDecimal valueDeposit;
@@ -27,11 +29,11 @@ public class Deposit {
     @JoinColumn(name = "WALLET_ID")
     private Wallet wallet;
 
-    public String getCodeDeposit() {
+    public UUID getCodeDeposit() {
         return codeDeposit;
     }
 
-    public void setCodeDeposit(String codeDeposit) {
+    public void setCodeDeposit(UUID codeDeposit) {
         this.codeDeposit = codeDeposit;
     }
 
