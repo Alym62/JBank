@@ -74,5 +74,19 @@ public class Transfer {
         this.accountCredit = accountCredit;
     }
 
+    public Wallet getWalletReceiver() {
+        return walletReceiver;
+    }
 
+    public void setWalletReceiver(Wallet walletReceiver) {
+        this.walletReceiver = walletReceiver;
+    }
+
+    public Wallet getWalletSender() {
+        return walletSender;
+    }
+
+    public void setWalletSender(Wallet walletSender) {
+        this.walletSender = walletSender;
+    }
 }

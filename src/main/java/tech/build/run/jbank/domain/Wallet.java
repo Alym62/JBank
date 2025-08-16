@@ -25,6 +25,10 @@ public class Wallet {
     @Column(name = "CURRENT_BALANCE")
     private BigDecimal currentBalance;
 
+    @Column(name = "VERSION")
+    @Version
+    private Long version;
+
     public UUID getCodeWallet() {
         return codeWallet;
     }
@@ -63,5 +67,13 @@ public class Wallet {
 
     public void setCurrentBalance(BigDecimal currentBalance) {
         this.currentBalance = currentBalance;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 }
