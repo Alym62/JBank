@@ -1,22 +1,27 @@
 package tech.build.run.jbank.services.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.build.run.jbank.controllers.dto.CreateWalletDto;
 import tech.build.run.jbank.controllers.dto.DepositDto;
+import tech.build.run.jbank.controllers.dto.StatementDto;
 import tech.build.run.jbank.domain.Deposit;
 import tech.build.run.jbank.domain.Wallet;
+import tech.build.run.jbank.domain.projections.StatementView;
 import tech.build.run.jbank.exceptions.DeleteWalletException;
 import tech.build.run.jbank.exceptions.WalletDataAlreadyException;
 import tech.build.run.jbank.exceptions.WalletNotFoundException;
 import tech.build.run.jbank.mappers.DepositMapper;
+import tech.build.run.jbank.mappers.StatementMapper;
 import tech.build.run.jbank.mappers.WalletMapper;
 import tech.build.run.jbank.repositories.DepositRepository;
 import tech.build.run.jbank.repositories.WalletRepository;
 import tech.build.run.jbank.services.IWalletService;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,7 +38,7 @@ public class WalletService implements IWalletService {
 
     @Override
     public Wallet createWallet(CreateWalletDto dto) {
-        Optional<Wallet> walletExists = repository.getByCpfOrEmail(dto.cpf(), dto.email());
+        Optional<Wallet> walletExists = repository.findByEmailOrCpf(dto.cpf(), dto.email());
         if (walletExists.isPresent()) {
             throw new WalletDataAlreadyException("Esse CPF ou Email não estão disponíveis na nossa base de dados");
         }
@@ -75,5 +80,16 @@ public class WalletService implements IWalletService {
         wallet.setCurrentBalance(wallet.getCurrentBalance().add(dto.value()));
 
         repository.save(wallet);
+    }
+
+    @Override
+    public Page<StatementDto> getStatements(UUID walletId, Integer page, Integer pageSize) {
+        Wallet wallet = repository.findById(walletId)
+                .orElseThrow(() -> new WalletNotFoundException("Carteira não encontrada em nossa base de dados"));
+
+        PageRequest pageable = PageRequest.of(page, pageSize, Sort.Direction.DESC, "statement_date_time");
+
+        Page<StatementView> resultStatements = repository.findStatements(walletId, pageable);
+        return resultStatements.map(projection -> StatementMapper.toDto(projection, wallet));
     }
 }

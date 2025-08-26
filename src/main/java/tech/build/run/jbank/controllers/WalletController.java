@@ -2,10 +2,12 @@ package tech.build.run.jbank.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.build.run.jbank.controllers.dto.CreateWalletDto;
 import tech.build.run.jbank.controllers.dto.DepositDto;
+import tech.build.run.jbank.controllers.dto.StatementDto;
 import tech.build.run.jbank.domain.Wallet;
 import tech.build.run.jbank.services.IWalletService;
 
@@ -49,5 +51,11 @@ public class WalletController {
     public ResponseEntity<Void> deposit(@PathVariable UUID walletId, @RequestBody @Valid DepositDto dto, HttpServletRequest request) {
         service.depositInWallet(walletId, dto, request.getAttribute("x-user-ip").toString());
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{walletId}/statements")
+    public ResponseEntity<Page<StatementDto>> getStatements(@PathVariable UUID walletId, @RequestParam Integer page,
+                                                            @RequestParam Integer pageSize) {
+        return ResponseEntity.ok().body(service.getStatements(walletId, page, pageSize));
     }
 }

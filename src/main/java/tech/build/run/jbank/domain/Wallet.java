@@ -27,7 +27,7 @@ public class Wallet {
 
     @Column(name = "VERSION")
     @Version
-    private Long version;
+    private Long version = 0L;
 
     public UUID getCodeWallet() {
         return codeWallet;
